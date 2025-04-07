@@ -70,16 +70,16 @@ pipeline:
                   name: Email_1
                   identifier: Email_1
                   spec:
-                    to: samriddha.choudhuri@harness.io
+                    to: samriddha.choudhuri@harness.io ##change to target email id 
                     cc: ""
                     subject: Harness Asset Governance:GCP Unattached Disks
                     body: <+pipeline.stages.consolidation.spec.execution.steps.ShellScript_1.output.outputVariables.html_content>
                   timeout: 10m
           environment:
-            environmentRef: samsmacdonottouch
+            environmentRef: samsmacdonottouch #change to your infra
             deployToAll: false
             infrastructureDefinitions:
-              - identifier: sammacdonotuse
+              - identifier: sammacdonotuse #change to your infra
         tags: {}
   variables:
     - name: unattached_disks

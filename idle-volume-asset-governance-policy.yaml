@@ -1,0 +1,30 @@
+policies:
+  - name: gcp-unattached-disks-webhook-batched-body
+    resource: gcp.disk
+    comments: |
+      Finds all unattached GCP persistent disks (status: READY) and sends a single
+      webhook request containing a list of these disks in the body.
+      Each item in the list includes the disk's name, project ID (parsed from selfLink),
+      and zone name (parsed from zone URL).
+    filters:
+      - status: READY # Disks not IN_USE are usually READY and unattached
+      # You might add more filters, e.g., checking 'users' list is empty,
+      # but status: READY is a common starting point.
+      # - type: value
+      #   key: users
+      #   value: empty
+    actions:
+      - type: webhook
+        url: https://example.com/webhook
+        batch: true  # Send a single webhook call with all resources found
+        # Define the structure of the request body using JMESPath
+        # 'resources' is the list of disk objects found by the filters.
+        # We project ([*]) onto this list to create a new structure for each disk.
+        body: >-
+          {
+            "unattached_disks": resources[*].{
+              name: name
+              link : selfLink
+            }
+          }
+        # The 'selfLink' is a full URL, so we need to parse it to get the project ID and zone.
